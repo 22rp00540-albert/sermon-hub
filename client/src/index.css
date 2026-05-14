@@ -3762,9 +3762,11 @@ button.member-audio-upload-play-bar:focus-visible {
   }
 }
 
-/* Hide floating hamburger to keep full-page layout clean */
-.dashboard-page .dashboard-left-menu-btn {
-  display: none !important;
+/* Hamburger: hidden on large screens (sidebar always visible); small screens use rules below */
+@media (min-width: 861px) {
+  .dashboard-page .dashboard-left-menu-btn {
+    display: none !important;
+  }
 }
 
 /* Cursor-like dashboard skin (final override) */

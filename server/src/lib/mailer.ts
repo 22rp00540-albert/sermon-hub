@@ -50,7 +50,8 @@ const getMemberPortalOrigin = (): string => {
 export const buildMemberPortalLoginLink = (): string => {
   const base = getMemberPortalOrigin();
   const next = encodeURIComponent("/member");
-  return `${base}/login?next=${next}`;
+  // `from=email` matches client LoginPage so email links are not redirected to `/`.
+  return `${base}/login?from=email&next=${next}`;
 };
 
 const extractSmtpAddress = (mailFrom: string): string => {

@@ -26,8 +26,9 @@ export default function LoginPage() {
   const [message, setMessage] = useState("");
 
   useEffect(() => {
-    // Keep the landing page as the real entry point.
-    if (searchParams.get("from") !== "home") {
+    // Allow home CTA (`from=home`) and mail links (`from=email`); block other deep-links to `/login`.
+    const from = searchParams.get("from");
+    if (from !== "home" && from !== "email") {
       navigate("/", { replace: true });
     }
   }, [navigate, searchParams]);

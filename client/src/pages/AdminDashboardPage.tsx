@@ -1296,7 +1296,14 @@ export default function AdminDashboardPage() {
 
   const adminDocumentsWorkspace =
     sermons.length === 0 ? (
-      <p className="muted">{tl("No sermons yet.")}</p>
+      <div className="muted" style={{ lineHeight: 1.65 }}>
+        <p style={{ margin: "0 0 8px", fontWeight: 600, color: "#0f172a" }}>{tl("No sermons yet.")}</p>
+        <p style={{ margin: 0 }}>
+          {tl(
+            "Create at least one audio sermon under “Audio Sermons” first. Then open “Documents” again to pick that sermon, add folders, and upload files.",
+          )}
+        </p>
+      </div>
     ) : !selectedSermonIdForDocs ? (
       <p className="muted">{tl("Preparing documents workspace…")}</p>
     ) : (
