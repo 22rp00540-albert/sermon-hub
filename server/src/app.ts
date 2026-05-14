@@ -12,8 +12,9 @@ import settingsRoutes from "./routes/settings.routes";
 import trackingRoutes from "./routes/tracking.routes";
 import videoRoutes from "./routes/video.routes";
 import { publicServerErrorMessage } from "./lib/publicErrorMessage";
+import { prisma } from "./lib/prisma";
 
-dotenv.config({ path: path.resolve(__dirname, "../.env") });
+dotenv.config({ path: path.resolve(__dirname, "../.env"), override: false });
 
 const app = express();
 
@@ -29,6 +30,22 @@ app.use(express.json());
 
 app.get("/api/v1/health", (_req, res) => {
   res.json({ ok: true });
+});
+
+/** Confirms MySQL is reachable (unlike /health, which does not touch the DB). */
+app.get("/api/v1/health/db", async (_req, res) => {
+  try {
+    await prisma.$queryRaw`SELECT 1`;
+    res.json({ ok: true, database: "up" });
+  } catch (err) {
+    console.error(err);
+    res.status(503).json({
+      ok: false,
+      database: "down",
+      hint:
+        "If host is mysql.railway.internal, set DATABASE_URL (or DATABASE_PUBLIC_URL) to Railway MYSQL_PUBLIC_URL on your host (e.g. Render).",
+    });
+  }
 });
 
 app.use("/api/v1/auth", authRoutes);
