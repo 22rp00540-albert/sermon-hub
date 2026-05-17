@@ -12,7 +12,11 @@ import sermonRoutes from "./routes/sermon.routes";
 import settingsRoutes from "./routes/settings.routes";
 import trackingRoutes from "./routes/tracking.routes";
 import videoRoutes from "./routes/video.routes";
-import { isObjectStorageConfigured } from "./lib/objectStorage";
+import {
+  getObjectStorageConfigSummary,
+  isObjectStorageConfigured,
+  testObjectStorageConnection,
+} from "./lib/objectStorage";
 import { publicServerErrorMessage } from "./lib/publicErrorMessage";
 import { prisma } from "./lib/prisma";
 
@@ -40,6 +44,17 @@ app.get("/api/v1/health", (_req, res) => {
     ok: true,
     servesClient,
     objectStorage: isObjectStorageConfigured(),
+    storage: getObjectStorageConfigSummary(),
+  });
+});
+
+app.get("/api/v1/health/storage", async (_req, res) => {
+  const summary = getObjectStorageConfigSummary();
+  const test = await testObjectStorageConnection();
+  res.status(test.ok ? 200 : 503).json({
+    ok: test.ok,
+    message: test.message,
+    ...summary,
   });
 });
 

@@ -14,7 +14,9 @@
     "prisma:studio": "prisma studio",
     "seed:admin": "ts-node-dev --transpile-only src/scripts/seedAdmin.ts",
     "migrate:audio:cloud": "ts-node-dev --transpile-only src/scripts/migrateLocalAudioToObjectStorage.ts",
-    "migrate:documents:cloud": "ts-node-dev --transpile-only src/scripts/migrateLocalDocumentsToObjectStorage.ts"
+    "migrate:documents:cloud": "ts-node-dev --transpile-only src/scripts/migrateLocalDocumentsToObjectStorage.ts",
+    "migrate:cloud": "npm run migrate:audio:cloud && npm run migrate:documents:cloud",
+    "check:storage": "ts-node-dev --transpile-only src/scripts/checkObjectStorage.ts"
   },
   "keywords": [],
   "author": "",

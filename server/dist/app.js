@@ -38,6 +38,16 @@ app.get("/api/v1/health", (_req, res) => {
         ok: true,
         servesClient,
         objectStorage: (0, objectStorage_1.isObjectStorageConfigured)(),
+        storage: (0, objectStorage_1.getObjectStorageConfigSummary)(),
+    });
+});
+app.get("/api/v1/health/storage", async (_req, res) => {
+    const summary = (0, objectStorage_1.getObjectStorageConfigSummary)();
+    const test = await (0, objectStorage_1.testObjectStorageConnection)();
+    res.status(test.ok ? 200 : 503).json({
+        ok: test.ok,
+        message: test.message,
+        ...summary,
     });
 });
 /** Confirms MySQL is reachable (unlike /health, which does not touch the DB). */

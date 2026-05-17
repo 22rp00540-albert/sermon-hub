@@ -9,8 +9,15 @@ const path_1 = __importDefault(require("path"));
 const objectStorage_1 = require("../lib/objectStorage");
 const prisma_1 = require("../lib/prisma");
 const upload_1 = require("../lib/upload");
-const localDocumentPattern = /^uploads\/documents\/[^/]+$/i;
+const localDocumentPattern = /^uploads\/documents\/.+/i;
 const normalize = (value) => value.replace(/\\/g, "/");
+const getFolderFromStoredPath = (storedPath) => {
+    const parts = normalize(storedPath).split("/");
+    const folderIndex = parts.findIndex((part) => part === "documents");
+    if (folderIndex >= 0 && parts[folderIndex + 1])
+        return parts[folderIndex + 1];
+    return "general";
+};
 const resolveLocalPath = (storedPath) => {
     const normalized = normalize(storedPath).replace(/^\/+/, "");
     const relative = normalized.startsWith("uploads/") ? normalized.slice("uploads/".length) : normalized;
@@ -54,7 +61,8 @@ const run = async () => {
             continue;
         }
         const fileBuffer = fs_1.default.readFileSync(filePath);
-        const objectKey = (0, objectStorage_1.createDocumentObjectKey)("general", path_1.default.basename(filePath));
+        const folderName = getFolderFromStoredPath(doc.filePath);
+        const objectKey = (0, objectStorage_1.createDocumentObjectKey)(folderName, doc.originalName || path_1.default.basename(filePath));
         await (0, objectStorage_1.uploadObject)({
             key: objectKey,
             body: fileBuffer,

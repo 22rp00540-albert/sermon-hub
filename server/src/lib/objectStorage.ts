@@ -1,5 +1,11 @@
 import { randomUUID } from "crypto";
-import { S3Client, PutObjectCommand, DeleteObjectCommand, GetObjectCommand } from "@aws-sdk/client-s3";
+import {
+  S3Client,
+  PutObjectCommand,
+  DeleteObjectCommand,
+  GetObjectCommand,
+  HeadBucketCommand,
+} from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import type { Readable } from "stream";
 
@@ -39,6 +45,31 @@ const sanitizeFileName = (name: string) =>
 
 export const isObjectStorageConfigured = () =>
   Boolean(s3Bucket && s3AccessKeyId && s3SecretAccessKey && (s3Endpoint || s3Region));
+
+export const getObjectStorageConfigSummary = () => ({
+  configured: isObjectStorageConfigured(),
+  bucket: s3Bucket || null,
+  endpoint: s3Endpoint || null,
+  region: s3Region,
+  forcePathStyle,
+});
+
+/** Verifies R2/S3 credentials and bucket access (call on startup or health check). */
+export const testObjectStorageConnection = async (): Promise<{ ok: boolean; message: string }> => {
+  if (!isObjectStorageConfigured()) {
+    return {
+      ok: false,
+      message: "Missing S3_BUCKET, S3_ACCESS_KEY_ID, S3_SECRET_ACCESS_KEY, or S3_ENDPOINT",
+    };
+  }
+  try {
+    await getClient().send(new HeadBucketCommand({ Bucket: s3Bucket }));
+    return { ok: true, message: `Connected to bucket "${s3Bucket}"` };
+  } catch (err) {
+    const msg = err instanceof Error ? err.message : "Unknown storage error";
+    return { ok: false, message: msg };
+  }
+};
 
 export const createAudioObjectKey = (originalName: string) => {
   const safeName = sanitizeFileName(originalName || "audio");

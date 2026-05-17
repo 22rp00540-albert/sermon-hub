@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.deleteObject = exports.getObjectSignedUrl = exports.getAudioObjectSignedUrl = exports.deleteAudioObject = exports.uploadObject = exports.uploadAudioObject = exports.createDocumentObjectKey = exports.createVideoObjectKey = exports.createAudioObjectKey = exports.isObjectStorageConfigured = void 0;
+exports.deleteObject = exports.getObjectSignedUrl = exports.getAudioObjectSignedUrl = exports.deleteAudioObject = exports.uploadObject = exports.uploadAudioObject = exports.createDocumentObjectKey = exports.createVideoObjectKey = exports.createAudioObjectKey = exports.testObjectStorageConnection = exports.getObjectStorageConfigSummary = exports.isObjectStorageConfigured = void 0;
 const crypto_1 = require("crypto");
 const client_s3_1 = require("@aws-sdk/client-s3");
 const s3_request_presigner_1 = require("@aws-sdk/s3-request-presigner");
@@ -33,6 +33,32 @@ const sanitizeFileName = (name) => name
     .replace(/[^a-zA-Z0-9.\-_]/g, "");
 const isObjectStorageConfigured = () => Boolean(s3Bucket && s3AccessKeyId && s3SecretAccessKey && (s3Endpoint || s3Region));
 exports.isObjectStorageConfigured = isObjectStorageConfigured;
+const getObjectStorageConfigSummary = () => ({
+    configured: (0, exports.isObjectStorageConfigured)(),
+    bucket: s3Bucket || null,
+    endpoint: s3Endpoint || null,
+    region: s3Region,
+    forcePathStyle,
+});
+exports.getObjectStorageConfigSummary = getObjectStorageConfigSummary;
+/** Verifies R2/S3 credentials and bucket access (call on startup or health check). */
+const testObjectStorageConnection = async () => {
+    if (!(0, exports.isObjectStorageConfigured)()) {
+        return {
+            ok: false,
+            message: "Missing S3_BUCKET, S3_ACCESS_KEY_ID, S3_SECRET_ACCESS_KEY, or S3_ENDPOINT",
+        };
+    }
+    try {
+        await getClient().send(new client_s3_1.HeadBucketCommand({ Bucket: s3Bucket }));
+        return { ok: true, message: `Connected to bucket "${s3Bucket}"` };
+    }
+    catch (err) {
+        const msg = err instanceof Error ? err.message : "Unknown storage error";
+        return { ok: false, message: msg };
+    }
+};
+exports.testObjectStorageConnection = testObjectStorageConnection;
 const createAudioObjectKey = (originalName) => {
     const safeName = sanitizeFileName(originalName || "audio");
     return `sermons/audio/${Date.now()}-${(0, crypto_1.randomUUID)()}-${safeName}`;

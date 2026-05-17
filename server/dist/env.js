@@ -28,3 +28,9 @@ if (process.env.RENDER === "true" && dbUrl?.includes(RAILWAY_INTERNAL_DB)) {
         "On Render: Environment → set DATABASE_URL to Railway's MYSQL_PUBLIC_URL (host like *.proxy.rlwy.net, port may not be 3306). " +
         "Or set DATABASE_PUBLIC_URL to MYSQL_PUBLIC_URL and redeploy.");
 }
+if (process.env.RENDER === "true" && process.env.NODE_ENV === "production") {
+    const bucket = process.env.S3_BUCKET?.trim();
+    if (bucket && bucket !== "sermon-audio") {
+        console.warn(`S3_BUCKET is "${bucket}" — expected "sermon-audio" for your R2 bucket.`);
+    }
+}

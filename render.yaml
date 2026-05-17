@@ -1,5 +1,9 @@
-# Deploy as ONE Web Service (not Static Site) at https://sermon-hub-web.onrender.com
-# Dashboard → New → Blueprint → connect repo, or update existing service to match below.
+# Sermon Hub — single Web Service (API + React) on Render
+# https://sermon-hub-web.onrender.com
+#
+# After connecting this repo: add secret env vars in Render Dashboard (see RENDER.md).
+# Do NOT use Static Site — use Web Service only.
+
 services:
   - type: web
     name: sermon-hub-web
@@ -11,21 +15,25 @@ services:
     envVars:
       - key: NODE_VERSION
         value: "20"
+      - key: NODE_ENV
+        value: production
+      - key: MEMBER_PORTAL_URL
+        value: https://sermon-hub-web.onrender.com
+      # Cloudflare R2 (bucket sermon-audio — files under sermons/audio, documents, video)
+      - key: S3_BUCKET
+        value: sermon-audio
+      - key: S3_ENDPOINT
+        value: https://7e7c5e484c61d5de19b902427130604f.r2.cloudflarestorage.com
+      - key: S3_REGION
+        value: auto
+      - key: S3_FORCE_PATH_STYLE
+        value: "true"
+      # Set these in Render Dashboard (never commit real values):
       - key: DATABASE_URL
         sync: false
       - key: JWT_SECRET
-        generateValue: true
-      - key: S3_BUCKET
         sync: false
       - key: S3_ACCESS_KEY_ID
         sync: false
       - key: S3_SECRET_ACCESS_KEY
         sync: false
-      - key: S3_REGION
-        value: auto
-      - key: S3_ENDPOINT
-        sync: false
-      - key: S3_FORCE_PATH_STYLE
-        value: "true"
-      - key: MEMBER_PORTAL_URL
-        value: https://sermon-hub-web.onrender.com

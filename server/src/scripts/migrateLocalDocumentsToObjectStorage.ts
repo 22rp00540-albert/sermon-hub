@@ -9,9 +9,16 @@ import {
 import { prisma } from "../lib/prisma";
 import { uploadsDir } from "../lib/upload";
 
-const localDocumentPattern = /^uploads\/documents\/[^/]+$/i;
+const localDocumentPattern = /^uploads\/documents\/.+/i;
 
 const normalize = (value: string) => value.replace(/\\/g, "/");
+
+const getFolderFromStoredPath = (storedPath: string) => {
+  const parts = normalize(storedPath).split("/");
+  const folderIndex = parts.findIndex((part) => part === "documents");
+  if (folderIndex >= 0 && parts[folderIndex + 1]) return parts[folderIndex + 1];
+  return "general";
+};
 
 const resolveLocalPath = (storedPath: string) => {
   const normalized = normalize(storedPath).replace(/^\/+/, "");
@@ -57,7 +64,8 @@ const run = async () => {
     }
 
     const fileBuffer = fs.readFileSync(filePath);
-    const objectKey = createDocumentObjectKey("general", path.basename(filePath));
+    const folderName = getFolderFromStoredPath(doc.filePath);
+    const objectKey = createDocumentObjectKey(folderName, doc.originalName || path.basename(filePath));
     await uploadObject({
       key: objectKey,
       body: fileBuffer,
