@@ -191,7 +191,7 @@ const createSermon = async (req, res) => {
             where: { status: client_1.UserStatus.APPROVED, role: client_1.Role.MEMBER },
             select: { email: true },
         });
-        await (0, mailer_1.sendNewSermonNotification)(recipients.map((u) => u.email), sermon.title);
+        await (0, mailer_1.sendApprovedMembersLibraryUploadEmail)(recipients.map((u) => u.email), "audio", sermon.title);
         res.status(201).json(sermon);
     }
     catch (error) {
@@ -309,7 +309,7 @@ const uploadSermonDocuments = async (req, res) => {
         where: { status: client_1.UserStatus.APPROVED, role: client_1.Role.MEMBER },
         select: { email: true },
     });
-    await (0, mailer_1.sendNewSermonNotification)(recipients.map((u) => u.email), `${sermon.title} (new documents)`);
+    await (0, mailer_1.sendApprovedMembersLibraryUploadEmail)(recipients.map((u) => u.email), "documents", sermon.title);
     res.status(201).json({ message: "Documents uploaded", count: created.count, folderName });
 };
 exports.uploadSermonDocuments = uploadSermonDocuments;

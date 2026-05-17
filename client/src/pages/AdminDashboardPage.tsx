@@ -1393,11 +1393,6 @@ export default function AdminDashboardPage() {
       <div className="global-brand">
         <img className="global-brand-logo" src="/logo.jpeg" alt="Church logo" />
       </div>
-      <button className="dashboard-left-menu-btn" onClick={() => setIsMenuOpen((v) => !v)} aria-label="Toggle menu">
-        <span />
-        <span />
-        <span />
-      </button>
       <section className={`dashboard-shell admin-modern-shell ${isMenuOpen ? "" : "sidebar-collapsed"}`}>
         <aside className="admin-sidebar">
           <div className="admin-sidebar-brand">
@@ -1445,6 +1440,17 @@ export default function AdminDashboardPage() {
         <main className="dashboard-main admin-modern-main">
           <header className="admin-topbar">
             <div className="topbar-left">
+              <button
+                type="button"
+                className="dashboard-left-menu-btn"
+                onClick={() => setIsMenuOpen((v) => !v)}
+                aria-label={isMenuOpen ? "Close menu" : "Open menu"}
+                aria-expanded={isMenuOpen}
+              >
+                <span />
+                <span />
+                <span />
+              </button>
               <div>
               <small className="muted">Church Media Control Center</small>
               <h2>{user?.fullName ?? tl("Admin")}</h2>

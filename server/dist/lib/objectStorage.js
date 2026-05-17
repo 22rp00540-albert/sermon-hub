@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.deleteObject = exports.getObjectSignedUrl = exports.getAudioObjectSignedUrl = exports.deleteAudioObject = exports.uploadObject = exports.uploadAudioObject = exports.createDocumentObjectKey = exports.createAudioObjectKey = exports.isObjectStorageConfigured = void 0;
+exports.deleteObject = exports.getObjectSignedUrl = exports.getAudioObjectSignedUrl = exports.deleteAudioObject = exports.uploadObject = exports.uploadAudioObject = exports.createDocumentObjectKey = exports.createVideoObjectKey = exports.createAudioObjectKey = exports.isObjectStorageConfigured = void 0;
 const crypto_1 = require("crypto");
 const client_s3_1 = require("@aws-sdk/client-s3");
 const s3_request_presigner_1 = require("@aws-sdk/s3-request-presigner");
@@ -38,6 +38,11 @@ const createAudioObjectKey = (originalName) => {
     return `sermons/audio/${Date.now()}-${(0, crypto_1.randomUUID)()}-${safeName}`;
 };
 exports.createAudioObjectKey = createAudioObjectKey;
+const createVideoObjectKey = (originalName) => {
+    const safeName = sanitizeFileName(originalName || "video");
+    return `sermons/video/${Date.now()}-${(0, crypto_1.randomUUID)()}-${safeName}`;
+};
+exports.createVideoObjectKey = createVideoObjectKey;
 const createDocumentObjectKey = (folderName, originalName) => {
     const safeFolder = sanitizeFileName(folderName || "general").toLowerCase() || "general";
     const safeName = sanitizeFileName(originalName || "document");

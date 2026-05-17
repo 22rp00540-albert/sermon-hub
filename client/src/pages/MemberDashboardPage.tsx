@@ -702,11 +702,6 @@ export default function MemberDashboardPage() {
       <div className="global-brand">
         <img className="global-brand-logo" src="/logo.jpeg" alt="Church logo" />
       </div>
-      <button className="dashboard-left-menu-btn" onClick={() => setIsMenuOpen((v) => !v)} aria-label="Toggle menu">
-        <span />
-        <span />
-        <span />
-      </button>
       <section className={`dashboard-shell admin-modern-shell member-modern-shell ${isMenuOpen ? "" : "sidebar-collapsed"}`}>
         <aside className="admin-sidebar member-sidebar">
           <div className="admin-sidebar-brand">
@@ -803,6 +798,17 @@ export default function MemberDashboardPage() {
         <main className="dashboard-main admin-modern-main">
           <header className="admin-topbar">
             <div className="topbar-left">
+              <button
+                type="button"
+                className="dashboard-left-menu-btn"
+                onClick={() => setIsMenuOpen((v) => !v)}
+                aria-label={isMenuOpen ? "Close menu" : "Open menu"}
+                aria-expanded={isMenuOpen}
+              >
+                <span />
+                <span />
+                <span />
+              </button>
               <div>
               <small className="muted">{tl("Stream-only secure access")}</small>
               <h2 className="member-page-h2">

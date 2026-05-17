@@ -4,6 +4,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.requireRole = exports.requireAuth = void 0;
+const client_1 = require("@prisma/client");
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const requireAuth = (req, res, next) => {
     const authHeader = req.headers.authorization;
@@ -15,7 +16,9 @@ const requireAuth = (req, res, next) => {
     const token = authHeader?.startsWith("Bearer ") ? authHeader.split(" ")[1] : queryToken;
     try {
         const decoded = jsonwebtoken_1.default.verify(token, process.env.JWT_SECRET);
-        req.user = decoded;
+        const r = String(decoded.role).toUpperCase();
+        const role = r === "ADMIN" ? client_1.Role.ADMIN : client_1.Role.MEMBER;
+        req.user = { userId: decoded.userId, role };
         next();
     }
     catch {

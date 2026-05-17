@@ -64,7 +64,7 @@ const rejectUser = async (req, res) => {
 };
 exports.rejectUser = rejectUser;
 const getAdminMetrics = async (_req, res) => {
-    const [members, approvedMembers, preachers, sermons, completedSessions] = await Promise.all([
+    const [members, approvedMembers, preachers, sermons, audioCompleted, videoCompleted] = await Promise.all([
         prisma_1.prisma.user.count({ where: { role: client_1.Role.MEMBER } }),
         prisma_1.prisma.user.count({
             where: { role: client_1.Role.MEMBER, status: client_1.UserStatus.APPROVED },
@@ -72,13 +72,14 @@ const getAdminMetrics = async (_req, res) => {
         prisma_1.prisma.preacher.count(),
         prisma_1.prisma.sermon.count(),
         prisma_1.prisma.listeningSession.count({ where: { completed: true } }),
+        prisma_1.prisma.videoListeningSession.count({ where: { completed: true } }),
     ]);
     res.json({
         members,
         approvedMembers,
         preachers,
         sermons,
-        completedSessions,
+        completedSessions: audioCompleted + videoCompleted,
     });
 };
 exports.getAdminMetrics = getAdminMetrics;

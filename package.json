@@ -8,6 +8,8 @@
     "dev:server": "npm run dev --prefix server",
     "dev:client": "npm run dev --prefix client",
     "build": "npm run build --prefix server && npm run build --prefix client",
+    "build:render": "npm ci --prefix server && npm ci --prefix client && npm run prisma:generate --prefix server && npm run build --prefix server && npm run build --prefix client",
+    "start:render": "npm run prisma:migrate:deploy --prefix server && npm run start --prefix server",
     "prisma:migrate": "npm run prisma:migrate --prefix server --",
     "prisma:generate": "npm run prisma:generate --prefix server",
     "seed:admin": "npm run seed:admin --prefix server"

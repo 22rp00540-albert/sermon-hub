@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.uploadDocuments = exports.uploadAudio = exports.upload = exports.uploadsDir = void 0;
+exports.uploadVideo = exports.uploadDocuments = exports.uploadAudio = exports.upload = exports.uploadsDir = void 0;
 const fs_1 = __importDefault(require("fs"));
 const multer_1 = __importDefault(require("multer"));
 const path_1 = __importDefault(require("path"));
@@ -13,9 +13,13 @@ if (!fs_1.default.existsSync(exports.uploadsDir)) {
     fs_1.default.mkdirSync(exports.uploadsDir, { recursive: true });
 }
 const audioUploadsDir = path_1.default.join(exports.uploadsDir, "audio");
+const videoUploadsDir = path_1.default.join(exports.uploadsDir, "video");
 const documentUploadsDir = path_1.default.join(exports.uploadsDir, "documents");
 if (!fs_1.default.existsSync(audioUploadsDir)) {
     fs_1.default.mkdirSync(audioUploadsDir, { recursive: true });
+}
+if (!fs_1.default.existsSync(videoUploadsDir)) {
+    fs_1.default.mkdirSync(videoUploadsDir, { recursive: true });
 }
 if (!fs_1.default.existsSync(documentUploadsDir)) {
     fs_1.default.mkdirSync(documentUploadsDir, { recursive: true });
@@ -35,6 +39,14 @@ const audioFileFilter = (_req, file, cb) => {
         return;
     }
     cb(new Error("Only audio files are allowed"));
+};
+const videoMimePattern = /^video\//i;
+const videoFileFilter = (_req, file, cb) => {
+    if (videoMimePattern.test(file.mimetype)) {
+        cb(null, true);
+        return;
+    }
+    cb(new Error("Only video files are allowed"));
 };
 const documentStorage = buildStorage(documentUploadsDir);
 const fieldStorage = multer_1.default.diskStorage({
@@ -57,4 +69,9 @@ exports.uploadAudio = (0, multer_1.default)({
 exports.uploadDocuments = (0, multer_1.default)({
     storage: multer_1.default.memoryStorage(),
     limits: { fileSize: 50 * 1024 * 1024 },
+});
+exports.uploadVideo = (0, multer_1.default)({
+    storage: buildStorage(videoUploadsDir),
+    fileFilter: videoFileFilter,
+    limits: { fileSize: 1024 * 1024 * 1024 },
 });
