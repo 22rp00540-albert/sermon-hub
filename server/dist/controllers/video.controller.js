@@ -27,7 +27,7 @@ const isValidStoredVideoPath = (value) => {
 };
 const persistUploadedVideo = async (file) => {
     if (!(0, objectStorage_1.isObjectStorageConfigured)()) {
-        throw new Error("Object storage is not configured. Set S3_* environment variables.");
+        throw new Error("Object storage is not configured. Set S3_BUCKET, S3_ACCESS_KEY_ID, S3_SECRET_ACCESS_KEY, and S3_ENDPOINT on Render (or in server/.env locally).");
     }
     const key = (0, objectStorage_1.createVideoObjectKey)(file.originalname);
     const contentType = file.mimetype || "video/mp4";

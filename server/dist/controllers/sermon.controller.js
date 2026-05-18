@@ -38,7 +38,7 @@ const normalizePathSlashes = (value) => value.replace(/\\/g, "/");
 const persistUploadedAudio = async (file) => {
     if (file.buffer) {
         if (!(0, objectStorage_1.isObjectStorageConfigured)()) {
-            throw new Error("Object storage is not configured. Set S3_* environment variables.");
+            throw new Error("Object storage is not configured. Set S3_BUCKET, S3_ACCESS_KEY_ID, S3_SECRET_ACCESS_KEY, and S3_ENDPOINT on Render (or in server/.env locally).");
         }
         const key = (0, objectStorage_1.createAudioObjectKey)(file.originalname);
         await (0, objectStorage_1.uploadAudioObject)({
@@ -85,7 +85,7 @@ const getDocumentContentType = (fileName) => {
 const persistUploadedDocument = async (file, folderName) => {
     if (file.buffer) {
         if (!(0, objectStorage_1.isObjectStorageConfigured)()) {
-            throw new Error("Object storage is not configured. Set S3_* environment variables.");
+            throw new Error("Object storage is not configured. Set S3_BUCKET, S3_ACCESS_KEY_ID, S3_SECRET_ACCESS_KEY, and S3_ENDPOINT on Render (or in server/.env locally).");
         }
         const key = (0, objectStorage_1.createDocumentObjectKey)(folderName, file.originalname);
         await (0, objectStorage_1.uploadObject)({

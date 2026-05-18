@@ -43,23 +43,35 @@ const sanitizeFileName = (name: string) =>
     .replace(/\s+/g, "-")
     .replace(/[^a-zA-Z0-9.\-_]/g, "");
 
-export const isObjectStorageConfigured = () =>
-  Boolean(s3Bucket && s3AccessKeyId && s3SecretAccessKey && (s3Endpoint || s3Region));
+export const getMissingObjectStorageEnvVars = (): string[] => {
+  const missing: string[] = [];
+  if (!s3Bucket.trim()) missing.push("S3_BUCKET");
+  if (!s3AccessKeyId.trim()) missing.push("S3_ACCESS_KEY_ID");
+  if (!s3SecretAccessKey.trim()) missing.push("S3_SECRET_ACCESS_KEY");
+  if (!s3Endpoint && !s3Region) missing.push("S3_ENDPOINT or S3_REGION");
+  return missing;
+};
+
+export const isObjectStorageConfigured = () => getMissingObjectStorageEnvVars().length === 0;
 
 export const getObjectStorageConfigSummary = () => ({
   configured: isObjectStorageConfigured(),
+  missingEnvVars: getMissingObjectStorageEnvVars(),
   bucket: s3Bucket || null,
   endpoint: s3Endpoint || null,
   region: s3Region,
   forcePathStyle,
+  hasAccessKey: Boolean(s3AccessKeyId),
+  hasSecretKey: Boolean(s3SecretAccessKey),
 });
 
 /** Verifies R2/S3 credentials and bucket access (call on startup or health check). */
 export const testObjectStorageConnection = async (): Promise<{ ok: boolean; message: string }> => {
   if (!isObjectStorageConfigured()) {
+    const missing = getMissingObjectStorageEnvVars();
     return {
       ok: false,
-      message: "Missing S3_BUCKET, S3_ACCESS_KEY_ID, S3_SECRET_ACCESS_KEY, or S3_ENDPOINT",
+      message: `Missing environment variable(s): ${missing.join(", ")}`,
     };
   }
   try {

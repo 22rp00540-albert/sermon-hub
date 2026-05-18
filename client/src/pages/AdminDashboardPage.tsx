@@ -1661,35 +1661,41 @@ export default function AdminDashboardPage() {
                 (filteredPendingUsers.length === 0 ? (
                   <p className="muted mt-16">No pending users right now.</p>
                 ) : (
-                  filteredPendingUsers.map((pendingUser, index) => (
-                    <div className="list-item admin-member-item" key={pendingUser.id}>
-                      <div>
-                        <small className="member-no">No. {index + 1}</small>
-                        <strong>{pendingUser.fullName}</strong>
-                        <p className="muted">{pendingUser.email}</p>
-                      </div>
-                      <div className="row">
-                        <button className="btn" onClick={() => setOpenedMemberId(openedMemberId === pendingUser.id ? null : pendingUser.id)}>
-                          {openedMemberId === pendingUser.id ? "Hide" : "See"}
-                        </button>
-                      </div>
-                      {openedMemberId === pendingUser.id && (
-                        <div className="admin-member-expand">
-                          <small className="muted">
-                            {pendingUser.country} · {pendingUser.phoneNumber}
-                          </small>
-                          <div className="row mt-16">
-                            <button className="btn primary" onClick={() => updateStatus(pendingUser.id, "approve")}>
-                              Approve
-                            </button>
-                            <button className="btn danger" onClick={() => updateStatus(pendingUser.id, "reject")}>
-                              Reject
-                            </button>
-                          </div>
-                        </div>
-                      )}
+                  <div className="member-sheet member-sheet--requests mt-16">
+                    <div className="member-sheet-row member-sheet-head">
+                      <span>No.</span>
+                      <span>Name</span>
+                      <span>Email</span>
+                      <span>Country</span>
+                      <span>Phone</span>
+                      <span>Actions</span>
                     </div>
-                  ))
+                    {filteredPendingUsers.map((pendingUser, index) => (
+                      <div className="member-sheet-row" key={pendingUser.id}>
+                        <span>{index + 1}</span>
+                        <span className="member-sheet-name">{pendingUser.fullName || "—"}</span>
+                        <span className="member-sheet-email">{pendingUser.email}</span>
+                        <span>{pendingUser.country || "—"}</span>
+                        <span>{pendingUser.phoneNumber || "—"}</span>
+                        <div className="member-sheet-actions">
+                          <button
+                            type="button"
+                            className="btn primary"
+                            onClick={() => void updateStatus(pendingUser.id, "approve")}
+                          >
+                            Approve
+                          </button>
+                          <button
+                            type="button"
+                            className="btn danger"
+                            onClick={() => void updateStatus(pendingUser.id, "reject")}
+                          >
+                            Reject
+                          </button>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
                 ))}
 
               {memberListView === "approved" &&
@@ -1744,32 +1750,30 @@ export default function AdminDashboardPage() {
                 (filteredRejectedMembers.length === 0 ? (
                   <p className="muted mt-16">No rejected members.</p>
                 ) : (
-                  filteredRejectedMembers.map((member, index) => (
-                      <div className="list-item admin-member-item" key={member.id}>
-                        <div>
-                          <small className="member-no">No. {index + 1}</small>
-                          <strong>{member.fullName}</strong>
-                          <p className="muted">{member.email}</p>
-                        </div>
-                        <div className="row">
-                          <button className="btn" onClick={() => setOpenedMemberId(openedMemberId === member.id ? null : member.id)}>
-                            {openedMemberId === member.id ? "Hide" : "See"}
+                  <div className="member-sheet member-sheet--requests mt-16">
+                    <div className="member-sheet-row member-sheet-head">
+                      <span>No.</span>
+                      <span>Name</span>
+                      <span>Email</span>
+                      <span>Country</span>
+                      <span>Phone</span>
+                      <span>Actions</span>
+                    </div>
+                    {filteredRejectedMembers.map((member, index) => (
+                      <div className="member-sheet-row" key={member.id}>
+                        <span>{index + 1}</span>
+                        <span className="member-sheet-name">{member.fullName || "—"}</span>
+                        <span className="member-sheet-email">{member.email}</span>
+                        <span>{member.country || "—"}</span>
+                        <span>{member.phoneNumber || "—"}</span>
+                        <div className="member-sheet-actions">
+                          <button type="button" className="btn danger" onClick={() => void deleteMember(member.id)}>
+                            Delete
                           </button>
                         </div>
-                        {openedMemberId === member.id && (
-                          <div className="admin-member-expand">
-                            <small className="muted">
-                              {member.country} · {member.phoneNumber}
-                            </small>
-                            <div className="row mt-16">
-                              <button className="btn danger" onClick={() => deleteMember(member.id)}>
-                                Delete
-                              </button>
-                            </div>
-                          </div>
-                        )}
                       </div>
-                    ))
+                    ))}
+                  </div>
                 ))}
 
               {memberListView === "all" &&

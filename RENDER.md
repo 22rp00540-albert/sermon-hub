@@ -10,8 +10,10 @@
 |-----|--------|
 | `DATABASE_URL` | Railway **public** MySQL URL (`*.proxy.rlwy.net`) — not `railway.internal` |
 | `JWT_SECRET` | Long random string (keep the same after first deploy) |
-| `S3_ACCESS_KEY_ID` | Cloudflare R2 API token access key |
-| `S3_SECRET_ACCESS_KEY` | Cloudflare R2 API token secret |
+| `S3_ACCESS_KEY_ID` | Cloudflare R2 API token **Access Key ID** (required — uploads fail without this) |
+| `S3_SECRET_ACCESS_KEY` | Cloudflare R2 API token **Secret Access Key** (required) |
+
+**Error: "Object storage is not configured"** → one or more of the rows above is missing on Render. Open `/api/v1/health` and check `storage.missingEnvVars`.
 
 These are already set in `render.yaml` (no need to re-enter unless you change them):
 

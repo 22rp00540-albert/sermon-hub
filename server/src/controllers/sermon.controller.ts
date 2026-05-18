@@ -51,7 +51,9 @@ const normalizePathSlashes = (value: string) => value.replace(/\\/g, "/");
 const persistUploadedAudio = async (file: Express.Multer.File) => {
   if (file.buffer) {
     if (!isObjectStorageConfigured()) {
-      throw new Error("Object storage is not configured. Set S3_* environment variables.");
+      throw new Error(
+        "Object storage is not configured. Set S3_BUCKET, S3_ACCESS_KEY_ID, S3_SECRET_ACCESS_KEY, and S3_ENDPOINT on Render (or in server/.env locally).",
+      );
     }
     const key = createAudioObjectKey(file.originalname);
     await uploadAudioObject({
@@ -98,7 +100,9 @@ const getDocumentContentType = (fileName: string) => {
 const persistUploadedDocument = async (file: Express.Multer.File, folderName: string) => {
   if (file.buffer) {
     if (!isObjectStorageConfigured()) {
-      throw new Error("Object storage is not configured. Set S3_* environment variables.");
+      throw new Error(
+        "Object storage is not configured. Set S3_BUCKET, S3_ACCESS_KEY_ID, S3_SECRET_ACCESS_KEY, and S3_ENDPOINT on Render (or in server/.env locally).",
+      );
     }
     const key = createDocumentObjectKey(folderName, file.originalname);
     await uploadObject({

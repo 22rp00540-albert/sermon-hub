@@ -23,7 +23,7 @@ export default function HomePage() {
           </Link>
         </div>
       </section>
-      <div className="landing-pills">
+      <div className="landing-pills" aria-label="Features">
         <span>{t("home.pill.streaming")}</span>
         <span>{t("home.pill.protected")}</span>
         <span>{t("home.pill.ministry")}</span>

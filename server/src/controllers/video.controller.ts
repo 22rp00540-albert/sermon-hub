@@ -31,7 +31,9 @@ const isValidStoredVideoPath = (value: unknown): value is string => {
 
 const persistUploadedVideo = async (file: Express.Multer.File) => {
   if (!isObjectStorageConfigured()) {
-    throw new Error("Object storage is not configured. Set S3_* environment variables.");
+    throw new Error(
+      "Object storage is not configured. Set S3_BUCKET, S3_ACCESS_KEY_ID, S3_SECRET_ACCESS_KEY, and S3_ENDPOINT on Render (or in server/.env locally).",
+    );
   }
   const key = createVideoObjectKey(file.originalname);
   const contentType = file.mimetype || "video/mp4";

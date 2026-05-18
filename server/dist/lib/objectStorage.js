@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.deleteObject = exports.getObjectSignedUrl = exports.getAudioObjectSignedUrl = exports.deleteAudioObject = exports.uploadObject = exports.uploadAudioObject = exports.createDocumentObjectKey = exports.createVideoObjectKey = exports.createAudioObjectKey = exports.testObjectStorageConnection = exports.getObjectStorageConfigSummary = exports.isObjectStorageConfigured = void 0;
+exports.deleteObject = exports.getObjectSignedUrl = exports.getAudioObjectSignedUrl = exports.deleteAudioObject = exports.uploadObject = exports.uploadAudioObject = exports.createDocumentObjectKey = exports.createVideoObjectKey = exports.createAudioObjectKey = exports.testObjectStorageConnection = exports.getObjectStorageConfigSummary = exports.isObjectStorageConfigured = exports.getMissingObjectStorageEnvVars = void 0;
 const crypto_1 = require("crypto");
 const client_s3_1 = require("@aws-sdk/client-s3");
 const s3_request_presigner_1 = require("@aws-sdk/s3-request-presigner");
@@ -31,22 +31,39 @@ const sanitizeFileName = (name) => name
     .trim()
     .replace(/\s+/g, "-")
     .replace(/[^a-zA-Z0-9.\-_]/g, "");
-const isObjectStorageConfigured = () => Boolean(s3Bucket && s3AccessKeyId && s3SecretAccessKey && (s3Endpoint || s3Region));
+const getMissingObjectStorageEnvVars = () => {
+    const missing = [];
+    if (!s3Bucket.trim())
+        missing.push("S3_BUCKET");
+    if (!s3AccessKeyId.trim())
+        missing.push("S3_ACCESS_KEY_ID");
+    if (!s3SecretAccessKey.trim())
+        missing.push("S3_SECRET_ACCESS_KEY");
+    if (!s3Endpoint && !s3Region)
+        missing.push("S3_ENDPOINT or S3_REGION");
+    return missing;
+};
+exports.getMissingObjectStorageEnvVars = getMissingObjectStorageEnvVars;
+const isObjectStorageConfigured = () => (0, exports.getMissingObjectStorageEnvVars)().length === 0;
 exports.isObjectStorageConfigured = isObjectStorageConfigured;
 const getObjectStorageConfigSummary = () => ({
     configured: (0, exports.isObjectStorageConfigured)(),
+    missingEnvVars: (0, exports.getMissingObjectStorageEnvVars)(),
     bucket: s3Bucket || null,
     endpoint: s3Endpoint || null,
     region: s3Region,
     forcePathStyle,
+    hasAccessKey: Boolean(s3AccessKeyId),
+    hasSecretKey: Boolean(s3SecretAccessKey),
 });
 exports.getObjectStorageConfigSummary = getObjectStorageConfigSummary;
 /** Verifies R2/S3 credentials and bucket access (call on startup or health check). */
 const testObjectStorageConnection = async () => {
     if (!(0, exports.isObjectStorageConfigured)()) {
+        const missing = (0, exports.getMissingObjectStorageEnvVars)();
         return {
             ok: false,
-            message: "Missing S3_BUCKET, S3_ACCESS_KEY_ID, S3_SECRET_ACCESS_KEY, or S3_ENDPOINT",
+            message: `Missing environment variable(s): ${missing.join(", ")}`,
         };
     }
     try {
